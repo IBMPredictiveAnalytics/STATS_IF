@@ -1,0 +1,69 @@
+#/***********************************************************************
+# * Licensed Materials - Property of IBM 
+# *
+# * IBM SPSS Products: Statistics Common
+# *
+# * (C) Copyright IBM Corp. 1989, 2014
+# *
+# * US Government Users Restricted Rights - Use, duplication or disclosure
+# * restricted by GSA ADP Schedule Contract with IBM Corp. 
+# ************************************************************************/
+
+# NLS_ENCODING=UTF-8
+# IBMUPYTH
+
+
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2014-05-29 22:17+Pacific Daylight Time\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: ENCODING\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: STATS_IF.py:167
+msgid "Each condition must have a corresponding syntax block"
+msgstr ""
+"У каждого условия должен быть соответствующий синтаксический блок"
+
+#: STATS_IF.py:169
+msgid "No conditions or syntax blocks were specified"
+msgstr ""
+"Не заданы условия или синтаксические блоки"
+
+#: STATS_IF.py:195
+msgid "A syntax command block contains no syntax"
+msgstr ""
+"Блок команды синтаксической конструкции не содержит элементов синтаксиса"
+
+#: STATS_IF.py:248
+msgid ""
+"The specified function was given without a module name\n"
+"    and was not found in a previous BEGIN PROGRAM block \n"
+"    and is not a built-in function: %s"
+msgstr ""
+"Функция была указана без указания имени модуля,\n"
+"    не была найдена в предыдущем блоке BEGIN PROGRAM \n"
+"    и не является встроенной функцией: %s"
+
+#: STATS_IF.py:257
+msgid "The number of arguments to function %s is incorrect"
+msgstr ""
+"Неверное число аргументов функции %s"
+
+#: STATS_IF.py:291
+msgid "---"
+msgstr ""
+"---"
+
+
+
