@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<!-- saved from url=(0014)about:internet -->
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="x-ua-compatible" content="IE=9" >
+
+<title>STATS IF Extension Command</title>
+
+<link rel="stylesheet" type="text/css" href="extsyntax.css" />
+
+
+
+
+
+</head>
+
+<body>
+<h1>STATS IF Extension Command</h1>
+
+<p>Conditionally execute a block of code which may includes procedures.</p>
+<div class="syntax">
+<p>STATS IF<br/>
+CONDITION1=&ldquo;<em>Python expression</em>&rdquo; CONDITION2=&ldquo;<em>Python expression</em>&rdquo;
+&hellip; CONDITION5=&ldquo;<em>Python expression</em>&rdquo;<br/>
+IMPORTS=<em>Python modules to import</em>  </p>
+
+<p>/ERROR
+CONTINUE=YES or NO<sup>&#42;&#42;</sup><br/>
+PRINT=&ldquo;<em>text</em>&rdquo;<br/>
+ERRORCALL=&ldquo;<em>Python function</em>&rdquo; </p>
+
+<p>/PRINT 
+ATSTART=&ldquo;<em>text</em>&rdquo; ATEND=&ldquo;<em>text</em>&rdquo;<br/>
+/SYNTAX1 &ldquo;<em>SPSS code</em>&rdquo; &ldquo;<em>SPSS code</em>&rdquo; &hellip;</p>
+
+<p>/SYNTAX2 &ldquo;<em>SPSS code</em>&rdquo; &hellip;<br/>
+&hellip;
+/SYNTAX5 &ldquo;<em>SPSS code</em>&rdquo;&hellip;</p>
+
+<p><sup>&#42;</sup> Required<br/>
+<sup>&#42;&#42;</sup> Default</p>
+</div>
+<p>/HELP displays this help and does nothing else.</p>
+
+
+<pre class="example"><code>STATS CONDITION1=&quot;spss.GetCaseCount() &gt; 10&quot; CONDITION2=&quot;True&quot;
+/SYNTAX1 &quot;FREQ x y z.&quot; &quot;DESC a b c&quot;
+/SYNTAX2 &quot;FREQ ALL&quot;.
+</code></pre>
+
+<p>The built-in conditional commands in Statistics such as DO IF only
+apply to transformation code.  This extension command allows procedures
+to be executed conditionally. 
+The variables in the conditions refer to Python variables, not the SPSS
+data.  The variables could be defined in a previous program block or 
+via apis.  For example, you could write
+<code>CONDITION1=&quot;spss.GetCaseCount() &gt; 100&quot;</code></p>
+
+<p>At least one CONDITION and a matching SYNTAX subcommand must be specified.</p>
+
+<p><strong>CONDITION1</strong> to <strong>CONDITION5</strong> define up to five Python expressions.
+The first one that is true (if any) causes the SYNTAX subcommand
+with the matching number to be executed.  The conditions are evaluated
+in numerical order, so, for example, CONDITION1, if present, is always
+evaluated first.  </p>
+
+<p>The conditions must be quoted and follow SPSS
+standard syntax quoting rules, which will be resolved before the
+expression is evaluated by Python.  It may be convenient to use
+INSERT commands here.  At most one block will be executed.
+It is not an error if no block is selected.  The block numbers
+present need not be consecutive.  To guarantee that at least one 
+block is executed, you could write,
+say, <code>CONDITION5=&quot;True&quot;</code>.</p>
+
+<p><strong>IMPORT</strong> can specify one or more Python modules to be imported before
+evaluating conditions or executing the syntax block.  The spss module
+is imported automatically.</p>
+
+<h2>SYNTAX Subcommands</h2>
+
+<p><strong>SYNTAX1&hellip;SYNTAX5</strong> specify one or more SPSS commands to be executed.
+Each line of the syntax must be enclosed in single or double quotes.
+The quoting must follow SPSS standard syntax quoting rules.
+BEGIN PROGRAM/END PROGRAM and BEGIN/END DATA blocks cannot be used in 
+these syntax blocks.  DEFINE&hellip;!ENDDEFINE can be used, which
+offers some interesting ways to combine programmability and
+macro.</p>
+
+<h2>ERROR</h2>
+
+<p>ERROR specifies how SPSS syntax errors affect processing.
+<strong>CONTINUE</strong>=NO, which is the default, causes the syntax block
+to be terminated on any error of severity 3 or higher while
+CONTINUE=YES causes syntax processing to resume with the
+next command in the syntax block.  Since an INSERT command
+as a syntax block is a single command, CONTINUE operates
+only at the level of the INSERT.</p>
+
+<p><strong>ERRORCALL</strong> can specify a Python function to be invoked when
+an error occurs.  See details below.</p>
+
+<p><strong>PRINT</strong>=&ldquo;text&rdquo; causes the text to be printed if an error occurs.</p>
+
+<h2>PRINT</h2>
+
+<p><strong>ATSTART</strong> and <strong>ATEND</strong> can specify
+text to be printed at the start and end of the block selected
+by the condition.</p>
+
+<p>ATSTART, ATEND, and /ERROR PRINT scan the text for the string
+<code>)BLOCK</code> and replace it with the number of the block selected
+for execution.  BLOCK must be written in upper case.</p>
+
+<h3>More on Error Handling</h3>
+
+<p>An error handling function can be specified in the form
+<code>&quot;module.function&quot;</code> or as <code>&quot;function&quot;</code>.  If the latter, it must
+have been defined in a previously executed BEGIN PROGRAM block
+or be a built-in Python function.
+If a module name is specified, the command will attempt to import
+the function.</p>
+
+<p>If an error occurs, the function will be called.  It receives four
+parameters: </p>
+
+<ul>
+<li>the  block number (starting from 1), </li>
+<li>the actual command syntax where the error occurred, </li>
+<li>the error severity level (which is not always informative), and </li>
+<li>the error description.<br/></li>
+</ul>
+
+<p>If the function returns the string <code>&quot;stop&quot;</code> the block is not resumed.<br/>
+If it returns <code>&quot;continue&quot;</code>, processing resumes with the command 
+following the error in the block being executed. 
+With any other return value, including None, the action specified
+in CONTINUE is taken.</p>
+
+<p>Here is an example using an error handling function.</p>
+
+<pre class="examplenobefore"><code>begin program.
+def fixup(block, cmd, level, description):
+    print &quot;block:&quot;, block, &quot;cmd:&quot;, cmd, &quot;level:&quot;, level
+    print &quot;description:&quot;, description
+    return &quot;continue&quot;
+end program.
+
+stats if condition1=&quot;True&quot;
+/error continue=no print=&quot;***** An error occurred&quot; errorcall=&quot;fixup&quot;
+/syntax1 &quot;freq jobcat.&quot;
+&quot;freq educ.&quot;
+&quot;freq foo.&quot;
+&quot;freq minority&quot;.
+</code></pre>
+
+<p>&copy; Copyright IBM Corp. 1989, 2014</p>
+
+</body>
+
+</html>
+
