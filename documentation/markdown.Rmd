@@ -1,0 +1,140 @@
+STATS IF Extension Command
+==========================
+
+Conditionally execute a block of code which may includes procedures.
+
+STATS IF  
+CONDITION1="*Python expression*" CONDITION2="*Python expression*"
+... CONDITION5="*Python expression*"  
+IMPORTS=*Python modules to import*  
+
+/ERROR
+CONTINUE=YES or NO^&#42;&#42;  
+PRINT="*text*"  
+ERRORCALL="*Python function*" 
+
+/PRINT 
+ATSTART="*text*" ATEND="*text*"  
+/SYNTAX1 "*SPSS code*" "*SPSS code*" ...
+
+/SYNTAX2 "*SPSS code*" ...  
+...
+/SYNTAX5 "*SPSS code*"...
+
+^&#42; Required  
+^&#42;&#42; Default
+
+/HELP displays this help and does nothing else.
+
+Example:
+```
+STATS CONDITION1="spss.GetCaseCount() > 10" CONDITION2="True"
+/SYNTAX1 "FREQ x y z." "DESC a b c"
+/SYNTAX2 "FREQ ALL".
+```
+
+The built-in conditional commands in Statistics such as DOIF only
+apply to transformation code.  This extension command allows procedures
+to be executed conditionally. 
+The variables in the conditions refer to Python variables, not the SPSS
+data.  The variables could be defined in a previous program block or 
+via apis.  For example, you could write
+`CONDITION1="spss.GetCaseCount() > 100"`
+
+At least one CONDITION and a matching SYNTAX subcommand must be specified.
+
+**CONDITION1** to **CONDITION5** define up to five Python expressions.
+The first one that is true (if any) causes the SYNTAX subcommand
+with the matching number to be executed.  The conditions are evaluated
+in numerical order, so, for example, CONDITION1, if present, is always
+evaluated first.  
+
+The conditions must be quoted and follow SPSS
+standard syntax quoting rules, which will be resolved before the
+expression is evaluated by Python.  It may be convenient to use
+INSERT commands here.  At most one block will be executed.
+It is not an error if no block is selected.  The block numbers
+present need not be consecutive.  To guarantee that at least one 
+block is executed, you could write,
+say, `CONDITION5="True"`.
+
+**IMPORT** can specify one or more Python modules to be imported before
+evaluating conditions or executing the syntax block.  The spss module
+is imported automatically.
+
+SYNTAX Subcommands
+------------------
+**SYNTAX1...SYNTAX5** specify one or more SPSS commands to be executed.
+Each line of the syntax must be enclosed in single or double quotes.
+The quoting must follow SPSS standard syntax quoting rules.
+BEGIN PROGRAM/END PROGRAM and BEGIN/END DATA blocks cannot be used in 
+these syntax blocks.  DEFINE...!ENDDEFINE can be used, which
+offers some interesting ways to combine programmability and
+macro.
+
+ERROR
+-----
+ERROR specifies how SPSS syntax errors affect processing.
+**CONTINUE**=NO, which is the default, causes the syntax block
+to be terminated on any error of severity 3 or higher while
+CONTINUE=YES causes syntax processing to resume with the
+next command in the syntax block.  Since an INSERT command
+as a syntax block is a single command, CONTINUE operates
+only at the level of the INSERT.
+
+**ERRORCALL** can specify a Python function to be invoked when
+an error occurs.  See details below.
+
+**PRINT**="text" causes the text to be printed if an error occurs.
+
+PRINT
+-----
+**ATSTART** and **ATEND** can specify
+text to be printed at the start and end of the block selected
+by the condition.
+
+ATSTART, ATEND, and /ERROR PRINT scan the text for the string
+`)BLOCK` and replace it with the number of the block selected
+for execution.  BLOCK must be written in upper case.
+
+More on Error Handling
+----------------------
+
+An error handling function can be specified in the form
+`"module.function"` or as `"function"`.  If the latter, it must
+have been defined in a previously executed BEGIN PROGRAM block
+or be a built-in Python function.
+If a module name is specified, the command will attempt to import
+the function.
+
+If an error occurs, the function will be called.  It receives four
+parameters: 
+* the  block number (starting from 1), 
+* the actual command syntax where the error occurred, 
+* the error severity level (which is not always informative), and 
+* the error description.  
+
+If the function returns the string `"stop"` the block is not resumed.  
+If it returns `"continue"`, processing resumes with the command 
+following the error in the block being executed. 
+With any other return value, including None, the action specified
+in CONTINUE is taken.
+
+Here is an example using an error handling function.
+```
+begin program.
+def fixup(block, cmd, level, description):
+    print "block:", block, "cmd:", cmd, "level:", level
+    print "description:", description
+    return "continue"
+end program.
+
+stats if condition1="True"
+/error continue=no print="***** An error occurred" errorcall="fixup"
+/syntax1 "freq jobcat."
+"freq educ."
+"freq foo."
+"freq minority".
+```
+
+(C) Copyright IBM Corp. 1989, 2014

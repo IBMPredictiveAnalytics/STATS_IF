@@ -1,0 +1,125 @@
+<html>
+<head>
+<title>Execute Code Blocks Conditionally</title>
+<STYLE TYPE="text/css"> 
+<!-- 
+
+H1 {font-weight:bold; color:#006699; font-family:Verdana, Arial, sans-serif;font-size:125%; }
+H2 {font-weight:bold; color:#006699; font-family:Verdana, Arial, sans-serif;font-size:110%; }
+BODY {font-family:Verdana, Arial, sans-serif;font-size:80%; }
+TABLE {font-size:100%;font-family:Verdana, Arial, sans-serif;}
+
+/* paragraph tags */
+.step {text-indent: -1.3em; margin-left:1.3em; margin-top: 0px;}
+.step-glyph { font-family: Arial, Helvetica, sans-serif; }
+.menuselection {margin-left:10px}
+.bullet {list-style-type: disc;margin-top:12px; margin-left:36px; text-indent:-1em; }
+.codeblock {background-color: #ffffe6; display:block; margin-left:5px; padding:5px;font-family:"courier new",monospace; }
+
+/* inline tags */
+.code {font-family: Courier,fixed pitch;}                           /*** used to tag pieces of code (syntax, Python, R, HTML, etc.)   ***/
+.screen {font-weight:bold; color:#408080}                       /*** used refer to on-screen text ***/
+.name {font-style: italic}                                                       /*** used to tag names, such as variable names, file names, and so forth ***/
+.runinhead {font-weight: bold} 
+.superscript {vertical-align:super; font-size:80%}
+.subscript {vertical-align:sub; font-size:80%}
+.symbol {font-family: Symbol}
+
+--> 
+</STYLE>
+</head>
+<body>
+<h1>Execute Code Blocks Conditionally</h1>
+<p>This command accepts one or more conditional expressions 
+and blocks of syntax and executes
+the block corresponding to the first condition that is true.
+(Multiple blocks are only supported in syntax.)
+It provides several options for handling errors that occur within the
+block.  The conditions are written as Python code that can refer to
+previously defined Python variables or expressions involving Python
+apis.
+</p>
+<p>This dialog box only exposes part of the command functionality.
+See Additional Features below for details.</p>
+
+<p><span class="runinhead">Condition 1</span> Enter a Python
+expression using previously created Python variables or programmability
+apis that evaluates to True or False.  For example, the following
+condition prevents the block from being executed unless there are
+at least 100 cases.</p>
+
+<p class="codeblock">spss.GetCaseCount() >= 100</p>
+<p class="bullet">• Variables in the active dataset can only be used
+in the condition via programmability features.
+</p>
+<p class="bullet">• The condition will be enclosed in double quotes.
+Use single quotes within it or double the double quote in order to
+comply with Statistics standard quoting rules.</p>
+
+<p><span class="runinhead">Import module</span> Enter the name of any Python
+module needed in order to evaluate the expression.  The spss module
+is automatically imported and does not need to be listed.
+</p>
+
+<p><span class="runinhead">Syntax Block</span>
+Enter lines of syntax to be executed if the condition is True</p>
+<p class="bullet">• 
+Multiple commands can be included.  End each command with a period.
+The lines will be enclosed in double quotes, so any quoting in the
+syntax should either use the single quote character or double the
+double quote in order to comply with Statistics syntax rules.</p>
+
+<p class="bullet">• BEGIN/END PROGRAM and BEGIN/END DATA blocks cannot be
+used here.</p>
+
+<h2>Options</h2>
+<p><span class="runinhead">Error Handling</span> Choose whether to
+stop the block of code as soon as a serious error (level 3 or  higher) occurs
+or to continue with the next command.  You can also specify
+text to be printed in a text block if an error occurs.  Note
+that an INSERT command is considered one command for error handling.</p>
+
+<p><span class="runinhead">Text</span> Specify text to be printed
+at the start of execution of a block and text to print at the end
+of the block.
+<p class="bullet">• All three text fields are scanned for the
+special upper case text )BLOCK.  If found, it is replaced by the number of
+the block that was executed, counting from 1.  The dialog generates
+syntax only for a single block, but the command syntax supports
+up to five blocks.</p>
+
+<h2>Additional Features</h2>
+<p>
+This dialog generates syntax for the STATS IF extension command. To display syntax help for this command,
+run the following syntax:
+</p>
+<p class="codeblock">STATS IF /HELP.</p>
+
+<p>Using syntax you can specify up to five conditions, each with
+an associated block of syntax.  The block for the first condition
+that is true (if any) is executed.  The blocks can be arbitraily
+long, but each line must be enclosed in single or double quotes
+with appropriate doubling if the same quote appears within the
+syntax.</p>
+<p>You can provide "ELSE" functionality by defining the last
+condition as "True".</p>
+
+<p>Using syntax, you can specify a Python function to be called
+when an error occurs.  It might be used, for example, to log
+errors to a file or to take corrective action.  The function
+return value can be used to override the error handling specified
+in the command.  See the syntax help for details.</p>
+
+
+<h2>Requirements</h2>
+This command requires the Python Essentials
+You can download the Essentials via the SPSS Community website at www.ibm.com/developerworks/spssdevcentral
+or from your installation materials.  With Statistics 22 or later, the Essentials are
+included by default in your Statistics installation.
+</p>
+  <hr
+  <p style="font-family:Verdana, Arial, sans-serif;font-size:80%;">
+  © Copyright IBM Corp. 2014</p>
+</body>
+</html>
+
