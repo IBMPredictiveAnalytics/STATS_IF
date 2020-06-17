@@ -2,16 +2,18 @@ Name: STATS IF
 Dialog-Specs: STATS_IF.spd
 Command-Specs: STATS_IF.xml
 Code-Files: STATS_IF.py
-Misc-Files: markdown.html,extsyntax.css,IBMdialogicon.png
+Misc-Files: extsyntax.css,IBMdialogicon.png,markdown.html
 Summary: Execute blocks of code conditionally
 Description: This command accepts a list of logical conditions and exe
  cutes the associated block of code for the first condition that is tr
  ue.  Conditions are written as Python expressions in which the values
   are from previously executed Python code or Python apis.
 Author: JKP, IBM SPSS
-Version: 1.0.4
-Product-Version: 18
+Version: 2.0.4
+Product-Version: 24
 Date: 5/20/2014
+Product-Version-Maximum: 99
 Categories: utility
 Plugins: Python
+Python-Version: 3
 Translation-Catalogues: lang

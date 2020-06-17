@@ -3,7 +3,7 @@
 # *
 # * IBM SPSS Products: Statistics Common
 # *
-# * (C) Copyright IBM Corp. 1989, 2014
+# * (C) Copyright IBM Corp. 1989, 2020
 # *
 # * US Government Users Restricted Rights - Use, duplication or disclosure
 # * restricted by GSA ADP Schedule Contract with IBM Corp. 
@@ -155,7 +155,7 @@ def doif(syntax1=None, condition1=None, condition2=None, condition3=None, condit
     
     if importlist:
         for m in importlist:
-            exec "import %s" % m
+            exec("import %s" % m)
             ##__import__(m)
     if not errorcall is None:
         errorcall = getfunc(errorcall, 4)
@@ -189,7 +189,7 @@ def doblock(blocknum, atstart, atend, errorprint, errorcont, errorcall, syntax):
     syntax is a list of syntax lines to execute."""
     
     if not atstart is None:
-        print atstart.replace(")BLOCK", str(blocknum + 1))
+        print(atstart.replace(")BLOCK", str(blocknum + 1)))
     lastline = len(syntax) - 1
     if lastline < 0:
         raise ValueError(_("""A syntax command block contains no syntax"""))
@@ -214,7 +214,7 @@ def doblock(blocknum, atstart, atend, errorprint, errorcont, errorcall, syntax):
                 cmd = []
             except:
                 if not errorprint is None:
-                    print errorprint.replace(")BLOCK", str(blocknum + 1))
+                    print(errorprint.replace(")BLOCK", str(blocknum + 1)))
                 if not errorcall is None:
                     # an error function can take control on error.
                     # It can return "stop" or "continue" to override the action specified in STATS IF
@@ -229,7 +229,7 @@ def doblock(blocknum, atstart, atend, errorprint, errorcont, errorcall, syntax):
                 cmd = []
                 
     if not atend is None:
-        print atend.replace(")BLOCK", str(blocknum + 1))
+        print(atend.replace(")BLOCK", str(blocknum + 1)))
         
 def getfunc(funcname, numargs=None):
     """load and validate callability of a function.  Return the function
@@ -250,7 +250,7 @@ def getfunc(funcname, numargs=None):
     and is not a built-in function: %s""") % item)
     else:
         modname = ".".join(bf[:-1])
-        exec "from %s import %s as _customfunction" % (modname, bf[-1])
+        exec("from %s import %s as _customfunction" % (modname, bf[-1]))
     
     if not numargs is None:
         if len(inspect.getargspec(_customfunction)[0]) != numargs:
@@ -260,7 +260,7 @@ def getfunc(funcname, numargs=None):
 def Run(args):
     """Execute the STATS IF extension command"""
 
-    args = args[args.keys()[0]]
+    args = args[list(args.keys())[0]]
 
     oobj = Syntax([
         Template("CONDITION1", subc="", ktype="literal", var="condition1"),
@@ -293,7 +293,7 @@ def Run(args):
         def _(msg):
             return msg
     # A HELP subcommand overrides all else
-    if args.has_key("HELP"):
+    if "HELP" in args:
         #print helptext
         helper()
     else:
@@ -313,7 +313,7 @@ def helper():
     # webbrowser.open seems not to work well
     browser = webbrowser.get()
     if not browser.open_new(helpspec):
-        print("Help file not found:" + helpspec)
+        print(("Help file not found:" + helpspec))
 try:    #override
     from extension import helper
 except:
@@ -381,7 +381,7 @@ class NonProcPivotTable(object):
 def attributesFromDict(d):
     """build self attributes from a dictionary d."""
     self = d.pop('self')
-    for name, value in d.iteritems():
+    for name, value in d.items():
         setattr(self, name, value)
         
 def _isseq(obj):
@@ -391,7 +391,7 @@ def _isseq(obj):
 
     # differs from operator.isSequenceType() in being False for a string
 
-    if isinstance(obj, basestring):
+    if isinstance(obj, str):
         return False
     else:
         try:
