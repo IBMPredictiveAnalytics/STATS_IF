@@ -1,4 +1,5 @@
 Name: STATS IF
+Display-Name: Conditional Code Execution
 Dialog-Specs: STATS_IF.spd
 Command-Specs: STATS_IF.xml
 Code-Files: STATS_IF.py
